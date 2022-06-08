@@ -45,7 +45,7 @@ There is much more you can do: components, lifecycled nodes, running multiple no
 
 But the most important thing is that you first clearly understand how to write the code foundation that you’ll need for your nodes. Once you’re clear with that, start to work with ROS2 publishers, subscribers, parameters, services. Those are the most important functionalities you have to learn. And you’ll see, if you already have a good code structure for your nodes, adding more ROS2 functionalities will be quite straightforward.
 
-## Temperature Publisher Node
+## Temperature Nodes - Publisher and Subscriber
 
 Following part of the guide [https://docs.ros.org/en/humble/Tutorials/Writing-A-Simple-Cpp-Publisher-And-Subscriber.html](https://docs.ros.org/en/humble/Tutorials/Writing-A-Simple-Cpp-Publisher-And-Subscriber.html) and adding some own creative functionality :).
 
@@ -57,6 +57,20 @@ source ./install/setup.bash
 ros2 run temperature_publisher temperature_publisher_node
 ```
 
+For the temperature alarm:
+
+```bash
+cd playground-ros2-rpi
+colcon build
+colcon build --packages-select temperature_alarm
+source ./install/setup.bash
+ros2 run temperature_alarm temperature_alarm_node
+```
+
+Attention. Original example used `topic_callback(const std_msgs::msg::String & msg)` but it seems it needs to be `topic_callback(std_msgs::msg::String::UniquePtr msg)`.
+
+How to run all? Not sure yet.
+
 ## Multi-Machine Setup
 
 Probable a good idea to also setup ROS2 on laptop. You can then develop and run packages on laptop and command other ROS2 instance.
@@ -66,3 +80,4 @@ This might be a good start: [https://roboticsbackend.com/ros2-multiple-machines-
 ## Docs
 
 * [https://docs.ros.org/en/humble/index.html](https://docs.ros.org/en/humble/index.html)
+* [https://github.com/ros2/examples/tree/humble](https://github.com/ros2/examples/tree/humble)
