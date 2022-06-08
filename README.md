@@ -81,3 +81,11 @@ This might be a good start: [https://roboticsbackend.com/ros2-multiple-machines-
 
 * [https://docs.ros.org/en/humble/index.html](https://docs.ros.org/en/humble/index.html)
 * [https://github.com/ros2/examples/tree/humble](https://github.com/ros2/examples/tree/humble)
+
+## Useful commands
+
+| Command | Description |
+| --- | --- |
+| `ros2 topic list -t` | List all topics and their types |
+| `ros2 topic echo <name>` | Output the data being published on a topic |
+| `ros2 topic info <name>` | Show topic stats |
