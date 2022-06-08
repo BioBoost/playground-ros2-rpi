@@ -27,12 +27,11 @@ Before starting you should create a package for the node: [https://roboticsbacke
 
 ### Hello Name
 
-<!-- TODO: Setup workspace in this dir -->
-
 Just go into the workspace and execute the build command:
 
 ```bash
 cd playground-ros2-rpi
+colcon build
 colcon build --packages-select hello_name
 source ./install/setup.bash
 ros2 run hello_name hello_name_node
