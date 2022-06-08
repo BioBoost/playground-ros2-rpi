@@ -38,7 +38,13 @@ source ./install/setup.bash
 ros2 run hello_name hello_name_node
 ```
 
-**Package 'hello_name' not found ?** Important. Don't forget to source the bash script after creating a new package.
+**Package 'hello_name' not found ?** Important. Don't forget to source the bash script after creating/compiling (yes every time) a package.
+
+### Going Further
+
+There is much more you can do: components, lifecycled nodes, running multiple nodes in the same executable with intra-process communication, etc.
+
+But the most important thing is that you first clearly understand how to write the code foundation that you’ll need for your nodes. Once you’re clear with that, start to work with ROS2 publishers, subscribers, parameters, services. Those are the most important functionalities you have to learn. And you’ll see, if you already have a good code structure for your nodes, adding more ROS2 functionalities will be quite straightforward.
 
 ## Multi-Machine Setup
 
