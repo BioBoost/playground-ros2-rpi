@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(trex_motor_controller)
+project(trex_interfaces)
 
 # Default to C99
 if(NOT CMAKE_C_STANDARD)
@@ -21,16 +21,10 @@ find_package(ament_cmake REQUIRED)
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)
 
-# For the hello_name package
-find_package(rclcpp REQUIRED)
-find_package(trex_interfaces REQUIRED)
+find_package(rosidl_default_generators REQUIRED)
 
-include_directories(include)
-add_executable(trex_motor_controller_node src/main.cpp)
-ament_target_dependencies(trex_motor_controller_node rclcpp trex_interfaces)
-install(TARGETS
-trex_motor_controller_node
-  DESTINATION lib/${PROJECT_NAME}
+rosidl_generate_interfaces(${PROJECT_NAME}
+  "msg/Speed.msg"
 )
 
 if(BUILD_TESTING)

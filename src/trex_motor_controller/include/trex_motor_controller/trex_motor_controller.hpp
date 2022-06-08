@@ -7,6 +7,7 @@
 #include <fcntl.h>          //O_RDWR
 #include "trex_status.hpp"
 #include <stdexcept>
+#include "trex_command.hpp"
 
 namespace TRex {
 
@@ -44,18 +45,26 @@ namespace TRex {
       }
 
       bool open(void) {
+        mutex.lock();
         fileDescriptor = _linux_open(device.c_str(), O_RDWR);
+
+        int result = -1;
         if (fileDescriptor >= 0) {
-          return (ioctl(fileDescriptor, I2C_SLAVE, address) >= 0);
+          result = ioctl(fileDescriptor, I2C_SLAVE, address);
         }
-        return false;
+        mutex.unlock();
+
+        return (fileDescriptor >= 0 && result >= 0);
       }
 
       Status status(void) {
         char buffer[STATUS_PACKET_SIZE] = { 0 };
         
-        _linux_read(fileDescriptor, buffer, STATUS_PACKET_SIZE);
-        if (_linux_read(fileDescriptor, buffer, STATUS_PACKET_SIZE) < 0) throw std::runtime_error("Failed to read TRex status");
+        mutex.lock();
+        int result = _linux_read(fileDescriptor, buffer, STATUS_PACKET_SIZE);
+        mutex.unlock();
+
+        if (result < 0) throw std::runtime_error("Failed to read TRex status");
         if (buffer[0] != STATUS_START_BYTE) throw std::runtime_error("Failed to read TRex status - wrong startbyte");
 
         return Status{
@@ -67,18 +76,60 @@ namespace TRex {
         };
       }
 
+      void move(int16_t leftSpeed, int16_t rightSpeed) {
+        currentCommand.leftMotorSpeed = leftSpeed;
+        currentCommand.rightMotorSpeed = rightSpeed;
+        currentCommand.leftMotorBrake = 0;
+        currentCommand.rightMotorBrake = 0;
+        command(currentCommand);
+      }
+
+      void stop(void) {
+        move(0, 0);
+      }
+
       bool close(void) {
+        mutex.lock();
         int result = _linux_close(fileDescriptor);
         fileDescriptor = -1;
+        mutex.unlock();
         return (result == 0);
+      }
+
+    private:
+      void command(Command command) {
+        char buffer[STATUS_PACKET_SIZE] = { 
+          COMMAND_START_BYTE,
+          (char)(command.leftMotorSpeed & 255),
+          (char)((command.leftMotorSpeed >> 8) & 255),
+          command.leftMotorBrake,
+          (char)(command.rightMotorSpeed & 255),
+          (char)((command.rightMotorSpeed >> 8) & 255),
+          command.rightMotorBrake,
+          (char)((uint16_t)command.batteryThreshold & 255),
+          (char)(((uint16_t)command.batteryThreshold >> 8) & 255)
+        };
+        
+        mutex.lock();
+        int result = _linux_write(fileDescriptor, buffer, COMMAND_PACKET_SIZE);
+        mutex.unlock();
+
+        if (result < 0) throw std::runtime_error("Failed to write TRex command");
       }
 
     private:
       std::string device = "/dev/i2c-1";
       uint8_t address = 0x07;
       int fileDescriptor = -1;
+
       const static int STATUS_PACKET_SIZE = 9;
       const static int STATUS_START_BYTE = 0x0f;
+
+      const static int COMMAND_PACKET_SIZE = 9;
+      const static int COMMAND_START_BYTE = 0x0f;
+      std::mutex mutex;
+
+      Command currentCommand;
   };
 
 }

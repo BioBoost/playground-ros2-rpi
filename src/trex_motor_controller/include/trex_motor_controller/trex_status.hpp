@@ -8,11 +8,11 @@ namespace TRex {
 
   struct Status {
 
-      ErrorFlags errors = ErrorFlags::NONE;
-      double batteryVoltage = 0;
-      double leftMotorCurrent = 0;
-      double rightMotorCurrent = 0;
-      OperationMode mode = OperationMode::ALL_GOOD;
+    ErrorFlags errors = ErrorFlags::NONE;
+    double batteryVoltage = 0;
+    double leftMotorCurrent = 0;
+    double rightMotorCurrent = 0;
+    OperationMode mode = OperationMode::ALL_GOOD;
 
   };
 
