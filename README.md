@@ -71,6 +71,18 @@ Attention. Original example used `topic_callback(const std_msgs::msg::String & m
 
 How to run all? Not sure yet.
 
+## Gamepad Controller
+
+Actually node to run on a PC or laptop.
+
+```bash
+cd playground-ros2-rpi
+colcon build
+colcon build --packages-select gamepad_control
+source ./install/setup.bash
+ros2 run gamepad_control gamepad_control_node
+```
+
 ## Multi-Machine Setup
 
 Probable a good idea to also setup ROS2 on laptop. You can then develop and run packages on laptop and command other ROS2 instance.
