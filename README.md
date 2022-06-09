@@ -79,6 +79,10 @@ This might be a good start: [https://roboticsbackend.com/ros2-multiple-machines-
 
 Damn apparently you just need to put the devices in the same network :).
 
+## Launching All at Once
+
+https://roboticsbackend.com/ros2-launch-file-example/
+
 ## Docs
 
 * [https://docs.ros.org/en/humble/index.html](https://docs.ros.org/en/humble/index.html)
@@ -91,3 +95,4 @@ Damn apparently you just need to put the devices in the same network :).
 | `ros2 topic list -t` | List all topics and their types |
 | `ros2 topic echo <name>` | Output the data being published on a topic |
 | `ros2 topic info <name>` | Show topic stats |
+| `ros2 node list` | List all nodes |

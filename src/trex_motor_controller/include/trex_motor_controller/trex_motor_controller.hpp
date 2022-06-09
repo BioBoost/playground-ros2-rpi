@@ -8,6 +8,7 @@
 #include "trex_status.hpp"
 #include <stdexcept>
 #include "trex_command.hpp"
+#include <mutex>
 
 namespace TRex {
 
