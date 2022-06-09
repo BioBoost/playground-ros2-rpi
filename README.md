@@ -77,6 +77,8 @@ Probable a good idea to also setup ROS2 on laptop. You can then develop and run 
 
 This might be a good start: [https://roboticsbackend.com/ros2-multiple-machines-including-raspberry-pi/](https://roboticsbackend.com/ros2-multiple-machines-including-raspberry-pi/)
 
+Damn apparently you just need to put the devices in the same network :).
+
 ## Docs
 
 * [https://docs.ros.org/en/humble/index.html](https://docs.ros.org/en/humble/index.html)
