@@ -83,6 +83,18 @@ source ./install/setup.bash
 ros2 run gamepad_control gamepad_control_node
 ```
 
+## Thumper Drive
+
+Node that takes in the gamepad buttons and drives trex controller
+
+```bash
+cd playground-ros2-rpi
+colcon build
+colcon build --packages-select thumper_drive
+source ./install/setup.bash
+ros2 run thumper_drive thumper_drive_node
+```
+
 ## Multi-Machine Setup
 
 Probable a good idea to also setup ROS2 on laptop. You can then develop and run packages on laptop and command other ROS2 instance.
@@ -108,3 +120,9 @@ https://roboticsbackend.com/ros2-launch-file-example/
 | `ros2 topic echo <name>` | Output the data being published on a topic |
 | `ros2 topic info <name>` | Show topic stats |
 | `ros2 node list` | List all nodes |
+
+Creating a package:
+
+```bash
+ros2 pkg create --build-type ament_cmake PACKAGE_NAME
+```
