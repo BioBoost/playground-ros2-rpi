@@ -23,11 +23,12 @@ find_package(ament_cmake REQUIRED)
 
 find_package(rclcpp REQUIRED)
 find_package(trex_interfaces REQUIRED)
-find_package(std_msgs REQUIRED)
+find_package(sensor_msgs REQUIRED)
+find_package(joy REQUIRED)
 
 include_directories(include)
 add_executable(thumper_drive_node src/main.cpp)
-ament_target_dependencies(thumper_drive_node rclcpp trex_interfaces std_msgs)
+ament_target_dependencies(thumper_drive_node rclcpp trex_interfaces std_msgs sensor_msgs joy)
 install(TARGETS
 thumper_drive_node
   DESTINATION lib/${PROJECT_NAME}

@@ -6,6 +6,7 @@
 #include "trex_interfaces/msg/drive.hpp"      // generated
 #include "trex_interfaces/msg/status.hpp"      // generated
 #include "motor_direction.hpp"
+#include <stdexcept>
 
 class TRexMotorControllerNode : public rclcpp::Node {
   public:
@@ -33,23 +34,26 @@ class TRexMotorControllerNode : public rclcpp::Node {
 
   private:
     void read_status() {
-      TRex::Status status = motorController.status();
+      try {
+        TRex::Status status = motorController.status();
+        auto message = trex_interfaces::msg::Status();
+        message.battery_voltage = status.batteryVoltage;
+        
+        message.left_motor_speed = status.leftMotorSpeed;
+        message.left_motor_direction = (uint8_t)(status.leftMotorDirection);
+        message.left_motor_current = status.leftMotorCurrent;
+        message.left_motor_braking = status.leftMotorBraking;
+        
+        message.right_motor_speed = status.rightMotorSpeed;
+        message.right_motor_direction = (uint8_t)(status.rightMotorDirection);
+        message.right_motor_current = status.rightMotorCurrent;
+        message.right_motor_braking = status.rightMotorBraking;
 
-      auto message = trex_interfaces::msg::Status();
-      message.battery_voltage = status.batteryVoltage;
-      
-      message.left_motor_speed = status.leftMotorSpeed;
-      message.left_motor_direction = (uint8_t)(status.leftMotorDirection);
-      message.left_motor_current = status.leftMotorCurrent;
-      message.left_motor_braking = status.leftMotorBraking;
-      
-      message.right_motor_speed = status.rightMotorSpeed;
-      message.right_motor_direction = (uint8_t)(status.rightMotorDirection);
-      message.right_motor_current = status.rightMotorCurrent;
-      message.right_motor_braking = status.rightMotorBraking;
-
-      statusPublisher->publish(message);
-      RCLCPP_INFO(this->get_logger(), "Motor battery voltage: " + std::to_string(status.batteryVoltage));
+        statusPublisher->publish(message);
+        RCLCPP_INFO(this->get_logger(), "Motor battery voltage: " + std::to_string(status.batteryVoltage));
+      } catch (const std::runtime_error& err) {
+        RCLCPP_WARN(this->get_logger(), "%s", err.what());
+      }
     }
 
     void drive_callback(trex_interfaces::msg::Drive::UniquePtr msg) {
@@ -60,12 +64,17 @@ class TRexMotorControllerNode : public rclcpp::Node {
         msg->right_motor_speed,
         (msg->right_motor_direction == 0 ? "(forward)" : "(backwards)")
       );
-      motorController.drive(
-        msg->left_motor_speed,
-        (TRex::MotorDirection)(msg->left_motor_direction),
-        msg->right_motor_speed,
-        (TRex::MotorDirection)(msg->right_motor_direction)
-      );
+
+      try {
+        motorController.drive(
+          msg->left_motor_speed,
+          (TRex::MotorDirection)(msg->left_motor_direction),
+          msg->right_motor_speed,
+          (TRex::MotorDirection)(msg->right_motor_direction)
+        );
+      } catch (const std::runtime_error& err) {
+        RCLCPP_WARN(this->get_logger(), "%s", err.what());
+      }
     }
 
     rclcpp::TimerBase::SharedPtr timer;

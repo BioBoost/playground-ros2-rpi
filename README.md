@@ -120,9 +120,27 @@ https://roboticsbackend.com/ros2-launch-file-example/
 | `ros2 topic echo <name>` | Output the data being published on a topic |
 | `ros2 topic info <name>` | Show topic stats |
 | `ros2 node list` | List all nodes |
+| `ros2 interface show <msg>` | Show detailed info about message |
+| `ros2 param list` | List node parameters |
+| `ros2 param set <node_name> <parameter_name> <value>` | Set parameter |
 
 Creating a package:
 
 ```bash
 ros2 pkg create --build-type ament_cmake PACKAGE_NAME
+```
+
+## Using Existing Packages
+
+For example `joy` package [https://index.ros.org/p/joy/github-ros-drivers-joystick_drivers/](https://index.ros.org/p/joy/github-ros-drivers-joystick_drivers/).
+
+```bash
+sudo apt update
+sudo apt install ros-foxy-joy
+```
+
+Running the node
+
+```bash
+ros2 run joy joy_node
 ```

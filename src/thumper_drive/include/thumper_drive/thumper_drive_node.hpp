@@ -1,40 +1,65 @@
 #pragma once
 
 #include "rclcpp/rclcpp.hpp"
-#include "std_msgs/msg/string.hpp"
-#include "trex_interfaces/msg/speed.hpp"
+#include "trex_interfaces/msg/drive.hpp"
+#include "trex_interfaces/msg/status.hpp"
+#include "sensor_msgs/msg/joy.hpp"
+#include <cmath>
 
 class ThumperDriveNode : public rclcpp::Node {
   public:
     ThumperDriveNode() : Node("thumper_drive") {
       RCLCPP_INFO(this->get_logger(), "Starting Thumper drive Node ...");
 
-      gamepadSubscriber = this->create_subscription<std_msgs::msg::String>(
-        "controllers/gamepad/button",          // topic
-        10,                   // The depth of the subscription's incoming message queue.
-        std::bind(&ThumperDriveNode::gamepad_callback, this, std::placeholders::_1)   // callback takes 1 arg
+      joySubscriber = this->create_subscription<sensor_msgs::msg::Joy>(
+        "/joy",          // topic
+        10,              // The depth of the subscription's incoming message queue.
+        std::bind(&ThumperDriveNode::joy_callback, this, std::placeholders::_1)   // callback takes 1 arg
       );
 
-      trexPublisher = this->create_publisher<trex_interfaces::msg::Speed>("trex/move", 10);
+      trexPublisher = this->create_publisher<trex_interfaces::msg::Drive>("trex/drive", 10);
     }
 
   private:
-    void gamepad_callback(std_msgs::msg::String::UniquePtr msg) {
-      RCLCPP_INFO(this->get_logger(), "Gamepad Received: '%s'", msg->data.c_str());
+    void joy_callback(sensor_msgs::msg::Joy::UniquePtr msg) {
+      // TODO: Need to drop some messages. Joy is publishing to fast. Tried topic_tools drop but can't build it.
+      // Crude solution for getting this to work
+      if ((++counter) % 2 != 0) return;
 
-      auto message = trex_interfaces::msg::Speed();
-      if (msg->data.compare("Button 1 pressed") == 0) {
-        message.left = 50;
-        message.right = 50;
-        trexPublisher->publish(message);
-      } else if (msg->data.compare("Button 1 released") == 0) {
-        message.left = 0;
-        message.right = 0;
-        trexPublisher->publish(message);
+      RCLCPP_INFO(this->get_logger(), "Processing Joystick Message");
+
+      double leftJoystick = msg->axes[1];
+      double rightJoystick = msg->axes[4];
+
+      auto message = trex_interfaces::msg::Drive();
+
+      if (leftJoystick > 0.1) {
+        message.left_motor_speed = (uint8_t)(leftJoystick * 255);
+        message.left_motor_direction = 0;    // Forward
+      } else if (leftJoystick < -0.1) {
+        message.left_motor_speed = (uint8_t)(std::abs(leftJoystick * 255));
+        message.left_motor_direction = 1;    // Backwards
+      } else {
+        message.left_motor_speed = 0;
+        message.left_motor_direction = 0;
       }
+
+      if (rightJoystick > 0.1) {
+        message.right_motor_speed = (uint8_t)(rightJoystick * 255);
+        message.right_motor_direction = 0;    // Forward
+      } else if (rightJoystick < -0.1) {
+        message.right_motor_speed = (uint8_t)(std::abs(rightJoystick * 255));
+        message.right_motor_direction = 1;    // Backwards
+      } else {
+        message.right_motor_speed = 0;
+        message.right_motor_direction = 0;
+      }
+
+      trexPublisher->publish(message);
     }
 
   private:
-    rclcpp::Subscription<std_msgs::msg::String>::SharedPtr gamepadSubscriber;
-    rclcpp::Publisher<trex_interfaces::msg::Speed>::SharedPtr trexPublisher;
+    rclcpp::Subscription<sensor_msgs::msg::Joy>::SharedPtr joySubscriber;
+    rclcpp::Publisher<trex_interfaces::msg::Drive>::SharedPtr trexPublisher;
+    int counter = 0;
 };
